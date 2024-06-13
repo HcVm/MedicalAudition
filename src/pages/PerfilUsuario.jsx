@@ -11,9 +11,9 @@ function PerfilUsuario() {
   const [mensajeExito, setMensajeExito] = useState(null);
   const [mensajeError, setMensajeError] = useState(null);
 
-  const handlePerfilSubmit = (nuevosDatosUsuario) => { // Recibir los nuevos datos del usuario
+  const handlePerfilSubmit = (nuevosDatosUsuario) => {
     try {
-      updateUser(nuevosDatosUsuario); // Actualizar el contexto con los nuevos datos
+      updateUser(nuevosDatosUsuario);
       setMensajeExito('Perfil actualizado correctamente');
       setMensajeError(null);
     } catch (error) {

@@ -32,12 +32,12 @@ function PerfilForm({ usuarioId, onSubmit, onCancel }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsLoading(true);
-    setError(null); // Limpiar mensajes de error anteriores
+    setError(null);
 
     try {
       const datosUsuario = { nombre_usuario: nombreUsuario.trim(), rol };
 
-      if (!isEditing || contraseña) { // Solo validar contraseña si es nuevo usuario o se está cambiando
+      if (!isEditing || contraseña) {
         if (!contraseña) {
           throw new Error('La contraseña es obligatoria');
         } else if (contraseña.length < 8) {
@@ -50,7 +50,7 @@ function PerfilForm({ usuarioId, onSubmit, onCancel }) {
         ? await actualizarUsuario(usuarioId, datosUsuario)
         : await crearUsuario(datosUsuario);
 
-      updateUser(response); // Actualizar el contexto con los nuevos datos del usuario
+      updateUser(response);
       onSubmit();
   toast.success('Perfil actualizado correctamente');
 } catch (error) {
@@ -72,7 +72,7 @@ function PerfilForm({ usuarioId, onSubmit, onCancel }) {
         required
         disabled={isLoading}
       />
-      {!isEditing && ( // Mostrar el campo de contraseña solo al crear un nuevo usuario
+      {!isEditing && (
         <TextField
           fullWidth
           label="Contraseña"

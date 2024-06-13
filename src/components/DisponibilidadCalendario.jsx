@@ -7,8 +7,8 @@ import { Button } from '@mui/material';
 
 
 function CalendarioDisponibilidad() {
-  const { user } = useContext(AuthContext); // Obtener el usuario del contexto
-  const audiologoId = user?.audiologo?.id; // ID del audiólogo asociado al usuario
+  const { user } = useContext(AuthContext);
+  const audiologoId = user?.audiologo?.id;
   const [horario, setHorario] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [successMessage, setSuccessMessage] = useState(null);
@@ -18,7 +18,7 @@ function CalendarioDisponibilidad() {
     const fetchHorario = async () => {
       if (!audiologoId) {
         setIsLoading(false);
-        return; // No hacer nada si no hay audiólogo asociado
+        return;
       }
       try {
         const audiologo = await getAudiologoById(audiologoId);

@@ -10,10 +10,10 @@ import CalendarioDisponibilidad from './pages/CalendarioDisponibilidad';
 import CrearPerfilMedico from './pages/CrearPerfilMedico';
 import PerfilUsuario from './pages/PerfilUsuario';
 import Login from './pages/Login';
-import AdminDashboard from './pages/AdminDashboard'; // Importa el componente AdminDashboard
+import AdminDashboard from './pages/AdminDashboard';
 import PrivateRoute from './components/PrivateRoute';
 import { AuthProvider } from './context/AuthContext';
-import { ToastContainer } from 'react-toastify'; // Para notificaciones
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 

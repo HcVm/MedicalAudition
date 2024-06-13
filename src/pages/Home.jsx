@@ -9,7 +9,6 @@ import Service3Image from '../assets/service3.jpg';
 function Home() {
   return (
     <div>
-      {/* Sección Hero */}
       <Box
         sx={{
           backgroundImage: `url(${HeroImage})`,
@@ -25,8 +24,6 @@ function Home() {
           Clínica Auditiva
         </Typography>
       </Box>
-
-      {/* Sección de Servicios */}
       <Container maxWidth="md" sx={{ my: 4 }}>
         <Typography variant="h5" component="h2" align="center" gutterBottom>
           Nuestros Servicios
@@ -54,13 +51,12 @@ function Home() {
         </Grid>
       </Container>
 
-      {/* Sección de Testimonios (puedes agregar testimonios aquí) */}
+      {/* Sección de Testimonios (en una futura iteración se agregará  testimonios aquí) */}
       {/* ... */}
 
-      {/* Sección de Contacto (puedes agregar información de contacto aquí) */}
+      {/* Sección de Contacto (en una futura iteración se agregará información de contacto aquí) */}
       {/* ... */}
 
-      {/* Botones de Llamada a la Acción */}
       <Container maxWidth="sm" sx={{ my: 4 }}>
         <Grid container spacing={2} justifyContent="center">
           <Grid item>

@@ -12,24 +12,22 @@ function Login() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setError(null); // Limpiar mensajes de error anteriores
+    setError(null);
 
     try {
-      const user = await login(nombreUsuario, contraseña); // Obtener datos del usuario autenticado
+      const user = await login(nombreUsuario, contraseña);
 
-      // Redirigir según el rol del usuario
       if (user.rol === 'paciente') {
         navigate('/mis-citas'); 
       } else if (user.rol === 'audiólogo') {
         navigate('/calendario-disponibilidad'); 
       } else if (user.rol === 'administrador') {
-        // Aquí puedes redirigir a una página de administración o a la que consideres adecuada
-        navigate('/admin-dashboard'); // Ejemplo de redirección a un dashboard de administrador
+        navigate('/admin-dashboard'); 
       } else {
         navigate('/');
       }
     } catch (error) {
-      setError(error.response?.data?.error || 'Error al iniciar sesión'); // Mostrar mensaje de error
+      setError(error.response?.data?.error || 'Error al iniciar sesión');
     }
   };
 

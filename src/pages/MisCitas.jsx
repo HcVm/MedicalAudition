@@ -76,13 +76,9 @@ function MisCitas() {
 
 const handleCancelarCita = async (citaId) => {
   try {
-    // 1. Cancelar la cita en el backend
-    await cancelarCita(citaId); // Llamada a la función del apiService
+    await cancelarCita(citaId);
 
-    // 2. Actualizar la lista de citas en el estado
     setCitas((prevCitas) => prevCitas.filter((cita) => cita.id !== citaId));
-
-    // 3. Mostrar una notificación de éxito (opcional)
     toast.success('Cita cancelada con éxito', {
       position: toast.POSITION.TOP_CENTER,
       autoClose: 3000,

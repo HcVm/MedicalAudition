@@ -8,7 +8,7 @@ const AuthContext = createContext({
   isAuthenticated: false,
   login: () => {},
   logout: () => {},
-  updateUser: () => {} // Agregar updateUser al contexto
+  updateUser: () => {} 
 });
 
 export const AuthProvider = ({ children }) => {
@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (nombre_usuario, contraseña) => {
     try {
       const { token } = await loginUsuario(nombre_usuario, contraseña);
-      const decodedToken = jwtDecode(token); // Usar jwtDecode en lugar de jwt_decode
+      const decodedToken = jwtDecode(token);
       setUser(decodedToken);
       localStorage.setItem('user', JSON.stringify(decodedToken));
       localStorage.setItem('token', token);
@@ -39,7 +39,6 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('token');
   };
 
-  // Función para actualizar los datos del usuario
   const updateUser = (updatedUser) => {
     setUser(updatedUser);
     localStorage.setItem('user', JSON.stringify(updatedUser));

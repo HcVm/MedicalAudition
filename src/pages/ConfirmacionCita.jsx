@@ -27,11 +27,10 @@ function ConfirmacionCita() {
       }
     };
 
-    // Si se proporciona la cita en el estado de la ubicación, úsala
     if (location.state?.cita) {
       setCita(location.state.cita);
       setIsLoading(false);
-    } else if (id) { // Si no, intenta obtenerla por ID
+    } else if (id) { 
       fetchCita();
     }
   }, [id, location.state?.cita]);
@@ -63,9 +62,7 @@ function ConfirmacionCita() {
         <Typography variant="body1">
           Fecha y Hora: {moment(cita.fecha).format('DD/MM/YYYY')} - {cita.hora}
         </Typography>
-        {/* Puedes agregar más detalles de la cita aquí */}
       </Box>
-      {/* Agrega un botón para volver a la página anterior */}
       <Button variant="outlined" onClick={() => navigate(-1)}>
         Volver
       </Button>

@@ -15,7 +15,7 @@ function CalendarioDisponibilidad() {
 
   useEffect(() => {
     const fetchHorario = async () => {
-      if (!audiologoId) { // Si no hay audiólogo asociado, salir del useEffect
+      if (!audiologoId) { 
         setIsLoading(false);
         return; 
       }
@@ -30,7 +30,7 @@ function CalendarioDisponibilidad() {
       }
     };
     fetchHorario();
-  }, [audiologoId]); // Ejecutar solo cuando cambia el ID del audiólogo
+  }, [audiologoId]);
 
   const handleHorarioChange = async (nuevoHorario) => {
     try {

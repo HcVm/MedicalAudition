@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
-import { getAudiologos } from '../services/apiService'; // Asegúrate de tener la función en apiService.js
+import { getAudiologos } from '../services/apiService';
 
 
 function CitaForm({ onSubmit, isLoading }) {
@@ -32,7 +32,6 @@ function CitaForm({ onSubmit, isLoading }) {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    // Validación de DNI (ejemplo simple)
     if (dni.length !== 8 || !/^\d+$/.test(dni)) {
       toast.error('El DNI debe tener 8 dígitos numéricos.');
       return;
@@ -74,7 +73,7 @@ function CitaForm({ onSubmit, isLoading }) {
         onChange={(e) => setEmail(e.target.value)}
         margin="normal"
         required
-        type="email" // Especificar que es un campo de correo electrónico
+        type="email"
       />
       <TextField
         fullWidth
@@ -108,7 +107,7 @@ function CitaForm({ onSubmit, isLoading }) {
         />
       </LocalizationProvider>
       <Button type="submit" variant="contained" disabled={isLoading}>
-      {isLoading ? 'Solicitando...' : 'Solicitar Cita'} {/* Mostrar "Solicitando..." mientras se carga */}
+      {isLoading ? 'Solicitando...' : 'Solicitar Cita'}
     </Button>
     </form>
   );

@@ -14,7 +14,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Cargar el usuario desde localStorage al iniciar la aplicación
     const storedUser = JSON.parse(localStorage.getItem('user'));
     if (storedUser) {
       setUser(storedUser);
@@ -24,13 +23,11 @@ export const AuthProvider = ({ children }) => {
   const login = async (nombre_usuario, contraseña) => {
     try {
       const { token } = await loginUsuario(nombre_usuario, contraseña);
-      // Decodificar el token para obtener los datos del usuario
       const decodedToken = jwtDecode(token);
       setUser(decodedToken);
       localStorage.setItem('user', JSON.stringify(decodedToken));
       localStorage.setItem('token', token);
     } catch (error) {
-      // Manejar el error de inicio de sesión
       console.error('Error al iniciar sesión:', error);
       throw error;
     }

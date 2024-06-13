@@ -2,12 +2,10 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:3001/api'; 
 
-// Función auxiliar para obtener el token de localStorage
 const getToken = () => {
   return localStorage.getItem('token');
 };
 
-// Función auxiliar para configurar los encabezados de las peticiones autenticadas
 const authHeader = () => {
   const token = getToken();
   if (token) {
@@ -17,7 +15,6 @@ const authHeader = () => {
   }
 };
 
-// Pacientes
 export const solicitarCita = async (paciente, audiologoId, fecha, hora) => {
   try {
     const response = await axios.post(`${API_URL}/citas`, { paciente, audiologoId, fecha, hora });
@@ -45,7 +42,6 @@ export const cancelarCita = async (citaId) => {
   }
 };
 
-// Audiólogos
 export const getAudiologos = async () => {
   try {
     const response = await axios.get(`${API_URL}/audiologos`, { headers: authHeader() });
@@ -82,7 +78,6 @@ export const getUsuarioById = async (usuarioId) => {
   }
 };
 
-// Actualizar un usuario
 export const actualizarUsuario = async (usuarioId, datosUsuario) => {
   try {
     const response = await axios.put(`${API_URL}/usuarios/${usuarioId}`, datosUsuario, { headers: authHeader() });
@@ -92,20 +87,18 @@ export const actualizarUsuario = async (usuarioId, datosUsuario) => {
   }
 };
 
-// Obtener todos los pacientes
 export const getPacientes = async () => {
   try {
-    const response = await axios.get(`${API_URL}/pacientes`, { headers: authHeader() }); // Asegúrate de requerir autenticación si es necesario
+    const response = await axios.get(`${API_URL}/pacientes`, { headers: authHeader() });
     return response.data;
   } catch (error) {
     throw error.response.data;
   }
 };
 
-// Obtener todas las citas
 export const getCitas = async () => {
   try {
-    const response = await axios.get(`${API_URL}/citas`, { headers: authHeader() }); // Asegúrate de requerir autenticación si es necesario
+    const response = await axios.get(`${API_URL}/citas`, { headers: authHeader() });
     return response.data;
   } catch (error) {
     throw error.response.data;
@@ -122,7 +115,6 @@ export const getCitaById = async (citaId) => {
   }
 };
 
-// ... (funciones para otras entidades: Atenciones, HistorialesMedicos, Pagos, Inventario, Suministros)
 
 // Usuarios (para audiólogos y administradores)
 export const crearUsuario = async (datosUsuario) => {
@@ -143,4 +135,3 @@ export const loginUsuario = async (nombre_usuario, contraseña) => {
   }
 };
 
-// ... (otras funciones para obtener, actualizar y eliminar usuarios, solo para administradores)

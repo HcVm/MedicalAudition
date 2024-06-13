@@ -6,7 +6,7 @@ import AuthContext from '../context/AuthContext';
 
 function ListaCitas({ onCancelarCita }) {
   const { user } = useContext(AuthContext);
-  const citas = user?.rol === 'paciente' ? user.citas : []; // Obtener citas del contexto
+  const citas = user?.rol === 'paciente' ? user.citas : [];
 
   const handleCancelarCita = async (citaId) => {
     try {
@@ -14,7 +14,6 @@ function ListaCitas({ onCancelarCita }) {
       onCancelarCita(citaId);
     } catch (error) {
       console.error('Error al cancelar la cita:', error);
-      // Manejar el error, por ejemplo, mostrar un mensaje al usuario
     }
   };
 

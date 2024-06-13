@@ -37,7 +37,6 @@ function AdminDashboard() {
         </Typography>
 
         <Grid container spacing={3}>
-          {/* Resumen de Datos */}
           <Grid item xs={12} sm={6} md={4}>
             <Paper elevation={3} sx={{ p: 2 }}>
               <Typography variant="h6">Resumen</Typography>
@@ -55,7 +54,6 @@ function AdminDashboard() {
             </Paper>
           </Grid>
 
-          {/* Enlaces a Otras Secciones */}
           <Grid item xs={12} sm={6} md={4}>
             <Paper elevation={3} sx={{ p: 2 }}>
               <Typography variant="h6">Acciones</Typography>
@@ -66,7 +64,6 @@ function AdminDashboard() {
                 <ListItem button component={Link} to="/gestion-inventario">
                   <ListItemText primary="Gestionar Inventario" />
                 </ListItem>
-                {/* ... otros enlaces a funcionalidades de administrador */}
               </List>
             </Paper>
           </Grid>

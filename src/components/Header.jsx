@@ -9,21 +9,17 @@ function Header() {
   return (
     <AppBar position="static">
       <Toolbar>
-        {/* Logo (ajusta la ruta y el estilo según tus necesidades) */}
         <img src="/logo.png" alt="Logo" style={{ height: 40, marginRight: 10 }} /> 
-
-        {/* Título */}
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           Clínica Auditiva
         </Typography>
 
-        {/* Botones de Navegación */}
-        <Box sx={{ display: 'flex' }}> {/* Agrupar botones en un Box */}
+        <Box sx={{ display: 'flex' }}>
           <Button component={Link} to="/" color="inherit">
             Inicio
           </Button>
 
-          {user ? ( // Mostrar botones según el rol del usuario
+          {user ? (
             <>
               {user.rol === 'paciente' && (
                 <Button component={Link} to="/mis-citas" color="inherit">
@@ -43,7 +39,6 @@ function Header() {
                   <Button component={Link} to="/gestion-inventario" color="inherit">
                     Inventario
                   </Button>
-                  {/* Agrega más botones para otras funcionalidades de administrador */}
                 </>
               )}
               <Button component={Link} to="/perfil" color="inherit">
@@ -53,7 +48,7 @@ function Header() {
                 Cerrar Sesión
               </Button>
             </>
-          ) : ( // Mostrar botones si no hay usuario autenticado
+          ) : (
             <>
               <Button component={Link} to="/registro" color="inherit">
                 Registro

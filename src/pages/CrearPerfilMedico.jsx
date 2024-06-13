@@ -13,11 +13,8 @@ function CrearPerfilMedico() {
 
   const handleSubmit = async () => {
     try {
-      // En este caso, no necesitamos hacer nada en el frontend, ya que la creación del usuario
-      // y del audiólogo se realiza en el backend en el endpoint /api/audiologos
       setMensajeExito('Perfil creado exitosamente');
       setMensajeError(null);
-      // Redirigir al login
       navigate('/login');
     } catch (error) {
       console.error('Error al crear perfil:', error);
@@ -27,7 +24,7 @@ function CrearPerfilMedico() {
   };
 
   const handleCancel = () => {
-    navigate('/'); // Redirigir a la página de inicio al cancelar
+    navigate('/');
   };
 
   return (
