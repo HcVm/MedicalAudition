@@ -9,9 +9,9 @@ function Header() {
   return (
     <AppBar position="static">
       <Toolbar>
-        <img src="/logo.png" alt="Logo" style={{ height: 40, marginRight: 10 }} /> 
+        <img src="logo.png" alt="Logo" style={{ height: 60, marginRight: 5 }} /> 
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          Clínica Auditiva
+          Medical Audición
         </Typography>
 
         <Box sx={{ display: 'flex' }}>
@@ -21,11 +21,6 @@ function Header() {
 
           {user ? (
             <>
-              {user.rol === 'paciente' && (
-                <Button component={Link} to="/mis-citas" color="inherit">
-                  Mis Citas
-                </Button>
-              )}
               {user.rol === 'audiólogo' && (
                 <Button component={Link} to="/calendario-disponibilidad" color="inherit">
                   Disponibilidad
@@ -50,9 +45,6 @@ function Header() {
             </>
           ) : (
             <>
-              <Button component={Link} to="/registro" color="inherit">
-                Registro
-              </Button>
               <Button component={Link} to="/login" color="inherit">
                 Iniciar Sesión
               </Button>

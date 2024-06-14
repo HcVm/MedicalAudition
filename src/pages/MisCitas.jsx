@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import ListaCitas from '../components/ListaCitas';
-import { obtenerCitasPaciente, getCitas } from '../services/apiService';
+import { obtenerCitasPaciente, getCitas, cancelarCita } from '../services/apiService';
 import {useAuth} from '../hooks/useAuth';
 import { Typography, CircularProgress, Box, TextField, Button } from '@mui/material';
 import { toast } from 'react-toastify';
@@ -43,6 +43,23 @@ function MisCitas() {
     }
   };
 
+  const handleCancelarCita = async (citaId) => {
+    setIsLoading(true);
+    try {
+      await cancelarCita(citaId);
+      setCitas((prevCitas) => prevCitas.filter((cita) => cita.id !== citaId));
+      toast.success('Cita cancelada con éxito', {
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: 3000,
+      });
+    } catch (error) {
+      console.error('Error al cancelar la cita:', error);
+      toast.error(error.response.data.error || 'Error al cancelar la cita');
+    } finally {
+      setIsLoading(true);
+    }
+  };
+
   return (
     <Box>
       <Typography variant="h4" gutterBottom>
@@ -74,20 +91,5 @@ function MisCitas() {
   );
 }
 
-const handleCancelarCita = async (citaId) => {
-  try {
-    await cancelarCita(citaId);
-
-    setCitas((prevCitas) => prevCitas.filter((cita) => cita.id !== citaId));
-    toast.success('Cita cancelada con éxito', {
-      position: toast.POSITION.TOP_CENTER,
-      autoClose: 3000,
-    });
-  } catch (error) {
-    console.error('Error al cancelar la cita:', error);
-    toast.error(error.response.data.error || 'Error al cancelar la cita');
-  }
-};
-
-
 export default MisCitas;
+

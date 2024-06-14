@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography, Button, Grid, Container, Card, CardContent, CardMedia } from '@mui/material';
 import { Link } from 'react-router-dom';
-import HeroImage from '../assets/hero.jpeg'; // Reemplaza con la ruta de tu imagen de fondo
+import HeroImage from '../assets/hero.jpeg';
 import Service1Image from '../assets/service1.jpeg';
 import Service2Image from '../assets/service2.jpg';
 import Service3Image from '../assets/service3.jpg';
@@ -20,8 +20,8 @@ function Home() {
           justifyContent: 'center',
         }}
       >
-        <Typography variant="h3" component="h1" color="white" align="center" sx={{ fontWeight: 'bold' }}>
-          Clínica Auditiva
+        <Typography variant="h3" component="h1" color="black" align="center" sx={{ fontWeight: 'bold' }}>
+          Medical Audición
         </Typography>
       </Box>
       <Container maxWidth="md" sx={{ my: 4 }}>

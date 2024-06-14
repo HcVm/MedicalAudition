@@ -6,7 +6,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import { getAudiologos } from '../services/apiService';
 
-
 function CitaForm({ onSubmit, isLoading }) {
   const [dni, setDni] = useState('');
   const [nombre, setNombre] = useState('');
@@ -16,6 +15,7 @@ function CitaForm({ onSubmit, isLoading }) {
   const [audiologoId, setAudiologoId] = useState('');
   const [fechaHora, setFechaHora] = useState(null);
   const [audiologos, setAudiologos] = useState([]);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchAudiologos = async () => {
@@ -24,6 +24,7 @@ function CitaForm({ onSubmit, isLoading }) {
         setAudiologos(data);
       } catch (error) {
         console.error('Error al obtener audiólogos:', error);
+        setError('No se pueden cargar los audiólogos en este momento');
       }
     };
     fetchAudiologos();
@@ -82,7 +83,7 @@ function CitaForm({ onSubmit, isLoading }) {
         onChange={(e) => setTelefono(e.target.value)}
         margin="normal"
       />
-      <FormControl fullWidth>
+      <FormControl fullWidth margin="normal">
         <InputLabel id="audiologo-select-label">Audiólogo</InputLabel>
         <Select
           labelId="audiologo-select-label"
@@ -91,11 +92,15 @@ function CitaForm({ onSubmit, isLoading }) {
           label="Audiólogo"
           onChange={(e) => setAudiologoId(e.target.value)}
         >
-          {audiologos.map((audiologo) => (
-            <MenuItem key={audiologo.id} value={audiologo.id}>
-              {audiologo.nombre} {audiologo.apellido}
-            </MenuItem>
-          ))}
+          {audiologos.length > 0 ? (
+            audiologos.map((audiologo) => (
+              <MenuItem key={audiologo.id} value={audiologo.id}>
+                {audiologo.nombre} {audiologo.apellido}
+              </MenuItem>
+            ))
+          ) : (
+            <MenuItem disabled>Cargando audiólogos...</MenuItem>
+          )}
         </Select>
       </FormControl>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -103,12 +108,13 @@ function CitaForm({ onSubmit, isLoading }) {
           label="Fecha y Hora"
           value={fechaHora}
           onChange={(newValue) => setFechaHora(newValue)}
-          renderInput={(params) => <TextField {...params} />}
+          renderInput={(params) => <TextField {...params} margin="normal" />}
         />
       </LocalizationProvider>
-      <Button type="submit" variant="contained" disabled={isLoading}>
-      {isLoading ? 'Solicitando...' : 'Solicitar Cita'}
-    </Button>
+      <Button type="submit" variant="contained" disabled={isLoading} margin="normal">
+        {isLoading ? 'Solicitando...' : 'Solicitar Cita'}
+      </Button>
+      {error && <p style={{ color: 'red' }}>{error}</p>}
     </form>
   );
 }

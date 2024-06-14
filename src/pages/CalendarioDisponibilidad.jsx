@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
 import DisponibilidadCalendario from '../components/DisponibilidadCalendario';
-import { actualizarHorarioAudiologo, getAudiologoById } from '../services/apiService';
+import { getAudiologoById } from '../services/apiService';
 import { CircularProgress, Box, Typography, Alert } from '@mui/material';
-import AuthContext from '../context/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 function CalendarioDisponibilidad() {
-  const { user } = useContext(AuthContext);
-  const audiologoId = user?.audiologo?.id; 
+  const { user } = useAuth();
+  const audiologoId = user?.audiologo?.id;
 
   const [horario, setHorario] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -15,32 +15,36 @@ function CalendarioDisponibilidad() {
 
   useEffect(() => {
     const fetchHorario = async () => {
-      if (!audiologoId) { 
+      if (!user || user.rol !== 'audiólogo' || !audiologoId) {
         setIsLoading(false);
-        return; 
+        setErrorMessage('No tienes permiso para acceder a esta página o falta información de usuario.');
+        return;
       }
+
       try {
-        const audiologo = await getAudiologoById(audiologoId);
-        setHorario(audiologo.horario_disponibilidad || []);
+        const data = await getAudiologoById(audiologoId);
+        setHorario(data.horario_disponibilidad || []);
       } catch (error) {
         console.error('Error al obtener el horario del audiólogo:', error);
-        setErrorMessage(error.response.data.error || 'Error al cargar el horario');
+        setErrorMessage(error.response?.data?.error || 'Error al cargar el horario');
       } finally {
         setIsLoading(false);
       }
     };
     fetchHorario();
-  }, [audiologoId]);
+  }, [audiologoId, user]);
 
   const handleHorarioChange = async (nuevoHorario) => {
     try {
       setIsLoading(true);
-      await actualizarHorarioAudiologo(audiologoId, nuevoHorario);
+      // Actualiza el horario directamente en el estado local
+      setHorario(nuevoHorario);
+      setIsLoading(false);
       setSuccessMessage('Horario actualizado correctamente');
       setErrorMessage(null);
     } catch (error) {
       console.error('Error al actualizar el horario:', error);
-      setErrorMessage(error.response.data.error || 'Error al actualizar el horario');
+      setErrorMessage(error.response?.data?.error || 'Error al actualizar el horario');
     } finally {
       setIsLoading(false);
     }
@@ -71,4 +75,3 @@ function CalendarioDisponibilidad() {
 }
 
 export default CalendarioDisponibilidad;
-

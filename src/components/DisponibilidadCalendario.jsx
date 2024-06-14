@@ -1,77 +1,142 @@
-import React, { useState, useEffect, useContext } from 'react';
-import DisponibilidadCalendario from '../components/DisponibilidadCalendario';
-import { actualizarHorarioAudiologo, getAudiologoById } from '../services/apiService';
-import { CircularProgress, Box, Typography, Alert } from '@mui/material';
-import AuthContext from '../context/AuthContext';
-import { Button } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { StaticDatePicker } from '@mui/x-date-pickers/StaticDatePicker';
+import { PickersDay } from '@mui/x-date-pickers/PickersDay';
+import { Box, Typography, Button, FormControlLabel, Checkbox, FormGroup, TextField, Alert } from '@mui/material';
+import dayjs from 'dayjs';
+import { useAuth } from '../context/AuthContext';
 
+const diasSemana = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
 
-function CalendarioDisponibilidad() {
-  const { user } = useContext(AuthContext);
-  const audiologoId = user?.audiologo?.id;
-  const [horario, setHorario] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [successMessage, setSuccessMessage] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
+function DisponibilidadCalendario({ horario, onHorarioChange }) {
+  const { user, updateAudiologo } = useAuth();
+
+  const [selectedDate, setSelectedDate] = useState(dayjs());
+  const [selectedHoras, setSelectedHoras] = useState({});
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchHorario = async () => {
-      if (!audiologoId) {
-        setIsLoading(false);
-        return;
-      }
-      try {
-        const audiologo = await getAudiologoById(audiologoId);
-        setHorario(audiologo.horario_disponibilidad || []);
-      } catch (error) {
-        console.error('Error al obtener el horario del audiólogo:', error);
-        setErrorMessage(error.response.data.error || 'Error al cargar el horario');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchHorario();
-  }, [audiologoId]);
+    const horasIniciales = {};
+    horario.forEach(franja => {
+      const fecha = dayjs(franja.fecha);
+      const dia = fecha.format('dddd').toLowerCase();
+      horasIniciales[dia] = horasIniciales[dia] || [];
+      horasIniciales[dia].push(dayjs(franja.hora, 'HH:mm'));
+    });
+    setSelectedHoras(horasIniciales);
+  }, [horario]);
 
-  const handleHorarioChange = (nuevoHorario) => {
-    setHorario(nuevoHorario);
+  const handleDateChange = (date) => {
+    if (date.isBefore(dayjs(), 'day')) {
+      setError('No puedes seleccionar una fecha pasada.');
+      return;
+    }
+    setError(null);
+    setSelectedDate(date);
+  };
+
+  const handleDiaChange = (event, fecha) => {
+    const dia = fecha.format('dddd').toLowerCase();
+    setSelectedHoras((prevHoras) => ({
+      ...prevHoras,
+      [dia]: event.target.checked ? Array.from({ length: 24 }, (_, i) => dayjs().hour(i).minute(0)) : [],
+    }));
+  };
+
+  const handleHoraChange = (dia, hora) => {
+    setSelectedHoras((prevHoras) => {
+      const horasDia = prevHoras[dia] || [];
+      const index = horasDia.findIndex((h) => h.isSame(hora));
+      if (index > -1) {
+        horasDia.splice(index, 1);
+      } else {
+        horasDia.push(hora);
+      }
+      return { ...prevHoras, [dia]: horasDia };
+    });
   };
 
   const handleGuardarHorario = async () => {
+    const nuevoHorario = Object.entries(selectedHoras)
+      .filter(([dia, horas]) => horas.length > 0)
+      .flatMap(([dia, horas]) =>
+        horas.map((hora) => ({ fecha: dayjs().day(diasSemana.indexOf(dia)).format('YYYY-MM-DD'), hora: hora.format('HH:mm') }))
+      );
+
+    if (nuevoHorario.length === 0) {
+      setError('Debes seleccionar al menos una hora para cada día habilitado');
+      return;
+    }
+
     try {
-      setIsLoading(true);
-      await actualizarHorarioAudiologo(audiologoId, horario);
-      setSuccessMessage('Horario actualizado correctamente');
-      setErrorMessage(null);
+      await updateAudiologo(user.audiologo.id, nuevoHorario);
+      onHorarioChange(nuevoHorario);
+      setError(null);
     } catch (error) {
-      console.error('Error al actualizar el horario:', error);
-      setErrorMessage(error.response.data.error || 'Error al actualizar el horario');
-    } finally {
-      setIsLoading(false);
+      console.error('Error al actualizar el horario del audiólogo:', error);
+      setError(error.response?.data?.error || 'Error al actualizar el horario');
     }
   };
 
-  if (!user || user.rol !== 'audiólogo') {
-    return <Typography variant="h6">No tienes permiso para acceder a esta página</Typography>;
-  }
-
-  if (isLoading) {
-    return <CircularProgress />;
-  }
-
   return (
-    <Box>
-      <Typography variant="h4" gutterBottom>
-        Mi Disponibilidad
-      </Typography>
-      {successMessage && <Alert severity="success">{successMessage}</Alert>}
-      {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-      <DisponibilidadCalendario horario={horario} onHorarioChange={handleHorarioChange} />
-      <Button variant="contained" onClick={handleGuardarHorario} disabled={isLoading}>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <StaticDatePicker
+        orientation="portrait"
+        openTo="day"
+        value={selectedDate}
+        onChange={handleDateChange}
+        renderInput={(params) => <TextField {...params} />}
+        renderDay={(day, _value, DayComponentProps) => {
+          const isDisabled = day.isBefore(dayjs(), 'day');
+          const isSelected = day.isSame(selectedDate, 'day');
+          const diaSemana = day.format('dddd').toLowerCase();
+          const isAvailable = !isDisabled && selectedHoras[diaSemana] && selectedHoras[diaSemana].length > 0;
+          return (
+            <PickersDay
+              {...DayComponentProps}
+              disabled={isDisabled}
+              sx={{
+                bgcolor: isSelected ? 'lightblue' : isAvailable ? 'lightgreen' : 'lightgray',
+              }}
+            />
+          );
+        }}
+      />
+
+      <Box mt={2}>
+        <Typography variant="h6">Horas disponibles:</Typography>
+        {selectedDate && (
+          <FormGroup row>
+            {Array.from({ length: 24 }, (_, i) => i).map((hora) => {
+              const horaFormateada = `${hora.toString().padStart(2, '0')}:00`;
+              const isSelected = selectedHoras[selectedDate.format('dddd').toLowerCase()]?.some(
+                (h) => h.format('HH:mm') === horaFormateada
+              );
+              return (
+                <FormControlLabel
+                  key={horaFormateada}
+                  control={
+                    <Checkbox
+                      checked={isSelected}
+                      onChange={() => handleHoraChange(selectedDate.format('dddd').toLowerCase(), dayjs(horaFormateada, 'HH:mm'))}
+                    />
+                  }
+                  label={horaFormateada}
+                  sx={{ mr: 1 }}
+                />
+              );
+            })}
+          </FormGroup>
+        )}
+      </Box>
+
+      {error && <Alert severity="error" onClose={() => setError(null)}>{error}</Alert>}
+      <Button variant="contained" onClick={handleGuardarHorario}>
         Guardar Horario
       </Button>
-    </Box>
+    </LocalizationProvider>
   );
 }
 
-export default CalendarioDisponibilidad;
+export default DisponibilidadCalendario;

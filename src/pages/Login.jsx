@@ -3,6 +3,7 @@ import { TextField, Button, Box, Typography, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../context/AuthContext';
 
+
 function Login() {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -15,22 +16,23 @@ function Login() {
     setError(null);
 
     try {
-      const user = await login(nombreUsuario, contraseña);
-
-      if (user.rol === 'paciente') {
-        navigate('/mis-citas'); 
-      } else if (user.rol === 'audiólogo') {
-        navigate('/calendario-disponibilidad'); 
-      } else if (user.rol === 'administrador') {
-        navigate('/admin-dashboard'); 
-      } else {
-        navigate('/');
-      }
+      await login(nombreUsuario, contraseña);
     } catch (error) {
+
       setError(error.response?.data?.error || 'Error al iniciar sesión');
+      return; 
+    }
+
+    const user = JSON.parse(localStorage.getItem('user'));
+
+    if (user.rol === 'audiólogo') {
+      navigate('/calendario-disponibilidad');
+    } else if (user.rol === 'administrador') {
+      navigate('/admin-dashboard');
+    } else {
+      navigate('/');
     }
   };
-
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 8 }}>
       <Typography variant="h4" gutterBottom>

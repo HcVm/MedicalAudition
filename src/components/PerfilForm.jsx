@@ -1,61 +1,48 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { TextField, Button, FormControl, InputLabel, Select, MenuItem, Alert } from '@mui/material';
-import { crearUsuario, getUsuarioById, actualizarUsuario } from '../services/apiService';
-import AuthContext from '../context/AuthContext';
+import React, { useState } from 'react';
+import { TextField, Button, Grid, Alert } from '@mui/material';
 import { toast } from 'react-toastify';
+import { crearAudiologo } from '../services/apiService';
 
-
-function PerfilForm({ usuarioId, onSubmit, onCancel }) {
-  const [isEditing, setIsEditing] = useState(!!usuarioId);
-  const { user, updateUser } = useContext(AuthContext);
-  const [nombreUsuario, setNombreUsuario] = useState(user?.nombre_usuario || '');
+function PerfilForm({ onSubmit, onCancel }) {
+  const [nombre, setNombre] = useState('');
+  const [apellido, setApellido] = useState('');
+  const [especialidad, setEspecialidad] = useState('');
+  const [email, setEmail] = useState('');
+  const [telefono, setTelefono] = useState('');
   const [contraseña, setContraseña] = useState('');
-  const [rol, setRol] = useState(user?.rol || 'audiólogo');
+  const [confirmarContraseña, setConfirmarContraseña] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    if (usuarioId && !user) {
-      const fetchUsuario = async () => {
-        try {
-          const usuario = await getUsuarioById(usuarioId);
-          setNombreUsuario(usuario.nombre_usuario);
-          setRol(usuario.rol);
-        } catch (error) {
-          setError(error.response.data.error || 'Error al obtener los datos del usuario');
-        }
-      };
-      fetchUsuario();
-    }
-  }, [usuarioId, user]);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setError('');
     setIsLoading(true);
-    setError(null);
 
     try {
-      const datosUsuario = { nombre_usuario: nombreUsuario.trim(), rol };
-
-      if (!isEditing || contraseña) {
-        if (!contraseña) {
-          throw new Error('La contraseña es obligatoria');
-        } else if (contraseña.length < 8) {
-          throw new Error('La contraseña debe tener al menos 8 caracteres');
-        }
-        datosUsuario.contraseña = contraseña;
+      // Validaciones básicas
+      if (!nombre || !apellido || !email || !contraseña || !confirmarContraseña) {
+        throw new Error('Todos los campos son obligatorios.');
+      }
+      if (contraseña !== confirmarContraseña) {
+        throw new Error('Las contraseñas no coinciden');
       }
 
-      const response = isEditing
-        ? await actualizarUsuario(usuarioId, datosUsuario)
-        : await crearUsuario(datosUsuario);
+      const audiologoData = {
+        nombre,
+        apellido,
+        especialidad,
+        email,
+        telefono,
+        contraseña,
+      };
 
-      updateUser(response);
+      await crearAudiologo(audiologoData);
+      toast.success('Audiólogo creado correctamente');
       onSubmit();
-  toast.success('Perfil actualizado correctamente');
-} catch (error) {
-  console.error('Error al crear/actualizar usuario:', error);
-  toast.error(error.message || 'Error al crear/actualizar usuario');
+    } catch (error) {
+      console.error('Error al crear audiólogo:', error.message);
+      setError(error.message || 'Error al crear audiólogo');
     } finally {
       setIsLoading(false);
     }
@@ -63,57 +50,114 @@ function PerfilForm({ usuarioId, onSubmit, onCancel }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <TextField
-        fullWidth
-        label="Nombre de usuario"
-        value={nombreUsuario}
-        onChange={(e) => setNombreUsuario(e.target.value)}
-        margin="normal"
-        required
-        disabled={isLoading}
-      />
-      {!isEditing && (
-        <TextField
-          fullWidth
-          label="Contraseña"
-          type="password"
-          value={contraseña}
-          onChange={(e) => setContraseña(e.target.value)}
-          margin="normal"
-          required
-          disabled={isLoading}
-        />
-      )}
-      <FormControl fullWidth margin="normal">
-        <InputLabel id="rol-select-label">Rol</InputLabel>
-        <Select
-          labelId="rol-select-label"
-          id="rol-select"
-          value={rol}
-          label="Rol"
-          onChange={(e) => setRol(e.target.value)}
-          disabled={isLoading}
-        >
-          <MenuItem value="audiólogo">Audiólogo</MenuItem>
-          <MenuItem value="administrador">Administrador</MenuItem>
-        </Select>
-      </FormControl>
-      <Button type="submit" variant="contained" disabled={isLoading}>
-        {isEditing ? 'Actualizar Perfil' : 'Crear Perfil'}
-      </Button>
-      {onCancel && (
-        <Button variant="outlined" onClick={onCancel} disabled={isLoading}>
-          Cancelar
-        </Button>
-        
-      )}
-      {error && (
-        <Alert severity="error" onClose={() => setError(null)}>
-          {error}
-        </Alert>
-      )}
+      <Grid container spacing={2}>
+        {/* Campos para nombre, apellido, especialidad, email y teléfono */}
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            label="Nombre"
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+            required
+            disabled={isLoading}
+            error={!!error}
+            helperText={error && error.includes('nombre') ? error : ''}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            label="Apellido"
+            value={apellido}
+            onChange={(e) => setApellido(e.target.value)}
+            required
+            disabled={isLoading}
+            error={!!error}
+            helperText={error && error.includes('apellido') ? error : ''}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            label="Especialidad"
+            value={especialidad}
+            onChange={(e) => setEspecialidad(e.target.value)}
+            required
+            disabled={isLoading}
+            error={!!error}
+            helperText={error && error.includes('especialidad') ? error : ''}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            disabled={isLoading}
+            error={!!error}
+            helperText={error && error.includes('email') ? error : ''}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            label="Teléfono"
+            value={telefono}
+            onChange={(e) => setTelefono(e.target.value)}
+            disabled={isLoading}
+            error={!!error}
+            helperText={error && error.includes('telefono') ? error : ''}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            label="Contraseña"
+            type="password"
+            value={contraseña}
+            onChange={(e) => setContraseña(e.target.value)}
+            required
+            disabled={isLoading}
+            error={!!error}
+            helperText={error && error.includes('contraseña') ? error : ''}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            label="Confirmar Contraseña"
+            type="password"
+            value={confirmarContraseña}
+            onChange={(e) => setConfirmarContraseña(e.target.value)}
+            required
+            disabled={isLoading}
+            error={!!error}
+            helperText={error && error.includes('contraseñas') ? error : ''}
+          />
+        </Grid>
+
+        {/* Botones de acción */}
+        <Grid item xs={12}>
+          <Button type="submit" variant="contained" color="primary" disabled={isLoading}>
+            Crear Audiólogo
+          </Button>
+          {onCancel && (
+            <Button onClick={onCancel} disabled={isLoading}>
+              Cancelar
+            </Button>
+          )}
+          {error && (
+            <Alert severity="error" onClose={() => setError(null)}>
+              {error}
+            </Alert>
+          )}
+        </Grid>
+      </Grid>
     </form>
   );
-}
+};
 
 export default PerfilForm;

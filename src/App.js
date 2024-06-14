@@ -41,6 +41,7 @@ function App() {
           </Route>
           <Route path="/crear-perfil-medico" element={<CrearPerfilMedico />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/calendario-disponibilidad/:id" element={<CalendarioDisponibilidad />} /> 
         </Routes>
         <Footer />
       </div>

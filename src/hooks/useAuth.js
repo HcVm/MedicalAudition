@@ -28,6 +28,8 @@ export const AuthProvider = ({ children }) => {
       setUser(decodedToken);
       localStorage.setItem('user', JSON.stringify(decodedToken));
       localStorage.setItem('token', token);
+  
+      return decodedToken;
     } catch (error) {
       throw error; 
     }
